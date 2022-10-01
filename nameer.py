@@ -33,7 +33,7 @@ for file in files:
             if stream["codec_name"] not in new_file_values:
                 new_file_values.append(stream["codec_name"])
 
-        if stream["codec_type"] == "video":
+        if stream["codec_type"] == "video" and stream["index"] == 0:
             new_file_values.append(f"{stream['height']}p")
 
             frame_rate_str = stream['r_frame_rate'].split("/")
