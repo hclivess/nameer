@@ -7,7 +7,7 @@ import sys
 files = sys.argv[1:]
 for file in files:
 
-    command_line = f"ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height {file}"
+    command_line = f'ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height "{file}"'
     base_name = os.path.splitext(file)[0]
     extension = os.path.splitext(file)[1]
 
@@ -23,7 +23,7 @@ for file in files:
     json_all = json.loads(stdout.decode())
 
     print(json_all)
-    new_file_values = [base_name]
+    new_file_values = [base_name.replace(" ", "_")]
     accepted = ["video", "audio"]
 
     for stream in json_all["streams"]:
