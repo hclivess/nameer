@@ -6,9 +6,10 @@ import sys
 
 files = sys.argv[1:]
 #files = ["a.mkv"]
+
 for file in files:
 
-    command_line = f'ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height "{file}"'
+    command_line = f'ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height,channels "{file}"'
     base_name = os.path.splitext(file)[0]
     extension = os.path.splitext(file)[1]
 
@@ -39,8 +40,11 @@ for file in files:
             new_file_values.append(f"{int((int(json_all['format']['bit_rate'])) / 1024)}kbs")
 
         if stream["codec_type"] == "audio":
-            if "bit_rate" in stream:
+            if "bit_rate" in stream and f"{int((int(stream['bit_rate'])) / 1024)}kbs" not in new_file_values:
                 new_file_values.append(f"{int((int(stream['bit_rate'])) / 1024)}kbs")
+
+            if f"{stream['channels']}c" not in new_file_values:
+                new_file_values.append(f"{stream['channels']}c")
 
     output_file = "_".join(new_file_values)
     output_file += extension

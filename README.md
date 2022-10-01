@@ -5,17 +5,19 @@ A simple tool to rename video files based on their properties. Simply drag and d
 You need to have `ffprobe.exe` in the directory or the system path. You can extract it from the extras directory in this repository.
 
 ### Example Input
-`recording.mkv`
+`home recording.mkv`
 
 ### Example Output
-`recording_mpeg4_272p_561kbs_mp3_156kbs.mkv`
+`home_recording_h264_1080p_4263kbs_aac_2c_multi.mkv`
 
 ### Individual Parts
 
-1. original file base name
+1. original file base name with underscores for spaces
 2. video format
 3. resolution
 4. video bitrate
 5. audio format
-6. audio bitrate
-7. original extension
+6. audio channels
+6. audio bitrate (optional)
+7. `multi` in case of multiple audio streams of same bitrate
+8. original extension
