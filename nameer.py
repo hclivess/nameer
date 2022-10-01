@@ -25,7 +25,7 @@ for file in files:
     json_all = json.loads(stdout.decode())
 
     print(json_all)
-    new_file_values = [base_name.replace(" ", "_")]
+    new_file_values = []
     accepted = ["video", "audio"]
 
     for stream in json_all["streams"]:
@@ -55,6 +55,8 @@ for file in files:
                             new_file_values.append(f"{stream['tags'][lang_tag]}")
 
     new_file_values = [x.lower() for x in new_file_values]
+    new_file_values.insert(0, base_name.replace(" ", "_"))
+
     output_file = "_".join(new_file_values)
     output_file += extension
 
