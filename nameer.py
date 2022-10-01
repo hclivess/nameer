@@ -41,8 +41,12 @@ for file in files:
             if "bit_rate" in stream and f"{int((int(stream['bit_rate'])) / 1024)}kbs" not in new_file_values:
                 new_file_values.append(f"{int((int(stream['bit_rate'])) / 1024)}kbs")
 
-            if f"{stream['channels']}c" not in new_file_values:
-                new_file_values.append(f"{stream['channels']}c")
+            channels = stream['channels']
+            if channels == 6:
+                channels = 5.1
+
+            if f"{channels}ch" not in new_file_values:
+                new_file_values.append(f"{channels}ch")
 
     lang_tags = ["language", "LANGUAGE", "lang"]
     for stream in json_all["streams"]:
