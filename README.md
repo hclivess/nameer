@@ -8,7 +8,7 @@ You need to have `ffprobe.exe` in the directory or the system path. You can extr
 `home recording.mkv`
 
 ### Example Output
-`home_recording_h264_1080p_4263kbs_aac_2c_multi.mkv`
+`home_recording_hevc_1080p_3960kbs_aac_5.1ch_eng_cze.mkv`
 
 ### Individual Parts
 
