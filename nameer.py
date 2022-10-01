@@ -9,7 +9,7 @@ files = sys.argv[1:]
 
 for file in files:
 
-    command_line = f'ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height,channels "{file}"'
+    command_line = f'ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height,channels,tags,index:stream_tags=language "{file}"'
     base_name = os.path.splitext(file)[0]
     extension = os.path.splitext(file)[1]
 
@@ -45,6 +45,9 @@ for file in files:
 
             if f"{stream['channels']}c" not in new_file_values:
                 new_file_values.append(f"{stream['channels']}c")
+
+            if f"{stream['tags']['language']}" not in new_file_values:
+                new_file_values.append(f"{stream['tags']['language']}")
 
     output_file = "_".join(new_file_values)
     output_file += extension
