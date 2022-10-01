@@ -1,1 +1,1 @@
-nuitka --follow-imports probe.py
+nuitka --follow-imports nameer.py
