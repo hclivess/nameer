@@ -18,7 +18,6 @@ You need to have `ffprobe.exe` in the directory or the system path. You can extr
 4. video bitrate
 5. audio format (where available)
 6. audio channels (where available)
-6. audio bitrate (where available)
-7. `multi` in case of multiple audio streams of same bitrate
+7. audio bitrate (where available)
 8. language
 9. original extension

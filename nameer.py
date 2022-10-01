@@ -32,8 +32,6 @@ for file in files:
         if stream["codec_type"] in accepted:
             if stream["codec_name"] not in new_file_values:
                 new_file_values.append(stream["codec_name"])
-            elif "multi" not in new_file_values:
-                new_file_values.append("multi")
 
         if stream["codec_type"] == "video":
             new_file_values.append(f"{stream['height']}p")
@@ -46,6 +44,8 @@ for file in files:
             if f"{stream['channels']}c" not in new_file_values:
                 new_file_values.append(f"{stream['channels']}c")
 
+    for stream in json_all["streams"]:
+        if stream["codec_type"] == "audio":
             if f"{stream['tags']['language']}" not in new_file_values:
                 new_file_values.append(f"{stream['tags']['language']}")
 
