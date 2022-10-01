@@ -9,7 +9,7 @@ files = sys.argv[1:]
 
 for file in files:
 
-    command_line = f'ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height,channels,tags,index:stream_tags=language "{file}"'
+    command_line = f'ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height,channels,tags,r_frame_rate,index:stream_tags=language "{file}"'
     base_name = os.path.splitext(file)[0]
     extension = os.path.splitext(file)[1]
 
@@ -35,18 +35,22 @@ for file in files:
 
         if stream["codec_type"] == "video":
             new_file_values.append(f"{stream['height']}p")
+
+            frame_rate_str = stream['r_frame_rate'].split("/")
+            frame_rate = int(int(frame_rate_str[0])/int(frame_rate_str[1]))
+            new_file_values.append(f"{frame_rate}fps")
+
             new_file_values.append(f"{int((int(json_all['format']['bit_rate'])) / 1024)}kbs")
 
         if stream["codec_type"] == "audio":
-            if "bit_rate" in stream and f"{int((int(stream['bit_rate'])) / 1024)}kbs" not in new_file_values:
-                new_file_values.append(f"{int((int(stream['bit_rate'])) / 1024)}kbs")
-
             channels = stream['channels']
             if channels == 6:
                 channels = 5.1
-
             if f"{channels}ch" not in new_file_values:
                 new_file_values.append(f"{channels}ch")
+
+            if "bit_rate" in stream and f"{int((int(stream['bit_rate'])) / 1024)}kbs" not in new_file_values:
+                new_file_values.append(f"{int((int(stream['bit_rate'])) / 1024)}kbs")
 
     lang_tags = ["language", "LANGUAGE", "lang"]
     for stream in json_all["streams"]:
