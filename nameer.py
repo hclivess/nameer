@@ -46,7 +46,7 @@ for file in files:
 
     lang_tags = ["language", "LANGUAGE", "lang"]
     for stream in json_all["streams"]:
-        """tags at the end"""
+        """tags at the end, only use tags for language because they are not tied to real values"""
         if stream["codec_type"] == "audio":
             if "tags" in stream:
                 for lang_tag in lang_tags:
