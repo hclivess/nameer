@@ -5,6 +5,7 @@ import os
 import sys
 
 files = sys.argv[1:]
+files = ["a.mkv"]
 for file in files:
 
     command_line = f'ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height "{file}"'
@@ -28,7 +29,10 @@ for file in files:
 
     for stream in json_all["streams"]:
         if stream["codec_type"] in accepted:
-            new_file_values.append(stream["codec_name"])
+            if stream["codec_name"] not in new_file_values:
+                new_file_values.append(stream["codec_name"])
+            elif "multi" not in new_file_values:
+                new_file_values.append("multi")
 
         if stream["codec_type"] == "video":
             new_file_values.append(f"{stream['height']}p")
