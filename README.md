@@ -14,5 +14,5 @@ A simple tool to rename video files based on their properties. Simply drag and d
 - resolution
 - video bitrate
 - audio format
-- audio bit rate
+- audio bitrate
 - original extension
