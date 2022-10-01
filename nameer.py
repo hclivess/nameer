@@ -45,9 +45,12 @@ for file in files:
                 new_file_values.append(f"{stream['channels']}c")
 
     for stream in json_all["streams"]:
+        """tags at the end"""
         if stream["codec_type"] == "audio":
-            if f"{stream['tags']['language']}" not in new_file_values:
-                new_file_values.append(f"{stream['tags']['language']}")
+            if "tags" in stream:
+                if "language" in stream["tags"]:
+                    if f"{stream['tags']['language']}" not in new_file_values:
+                        new_file_values.append(f"{stream['tags']['language']}")
 
     output_file = "_".join(new_file_values)
     output_file += extension
