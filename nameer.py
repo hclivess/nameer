@@ -5,7 +5,7 @@ import os
 import sys
 
 files = sys.argv[1:]
-#files = ["a.mkv"]
+# files = ["a.mkv"]
 
 for file in files:
 
@@ -44,14 +44,17 @@ for file in files:
             if f"{stream['channels']}c" not in new_file_values:
                 new_file_values.append(f"{stream['channels']}c")
 
+    lang_tags = ["language", "LANGUAGE", "lang"]
     for stream in json_all["streams"]:
         """tags at the end"""
         if stream["codec_type"] == "audio":
             if "tags" in stream:
-                if "language" in stream["tags"]:
-                    if f"{stream['tags']['language']}" not in new_file_values:
-                        new_file_values.append(f"{stream['tags']['language']}")
+                for lang_tag in lang_tags:
+                    if lang_tag in stream["tags"]:
+                        if f"{stream['tags'][lang_tag]}" not in new_file_values:
+                            new_file_values.append(f"{stream['tags'][lang_tag]}")
 
+    new_file_values = [x.lower() for x in new_file_values]
     output_file = "_".join(new_file_values)
     output_file += extension
 
