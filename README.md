@@ -12,10 +12,10 @@ You need to have `ffprobe.exe` in the directory or the system path. You can extr
 
 ### Individual Parts
 
-- original filename
-- video format
-- resolution
-- video bitrate
-- audio format
-- audio bitrate
-- original extension
+1. original file base name
+2. video format
+3. resolution
+4. video bitrate
+5. audio format
+6. audio bitrate
+7. original extension
