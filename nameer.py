@@ -5,7 +5,7 @@ import os
 import sys
 
 files = sys.argv[1:]
-files = ["a.mkv"]
+#files = ["a.mkv"]
 for file in files:
 
     command_line = f'ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height "{file}"'
