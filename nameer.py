@@ -30,7 +30,7 @@ for file in files:
 
     for stream in json_all["streams"]:
         if stream["codec_type"] in accepted:
-            if stream["codec_name"] not in new_file_values:
+            if stream["codec_name"].upper() not in new_file_values:
                 new_file_values.append(stream["codec_name"].upper())
 
         if stream["codec_type"] == "video" and stream["index"] == 0:
@@ -59,10 +59,10 @@ for file in files:
             if "tags" in stream:
                 for lang_tag in lang_tags:
                     if lang_tag in stream["tags"]:
-                        if f"{stream['tags'][lang_tag]}" not in new_file_values:
-                            new_file_values.append(f"{stream['tags'][lang_tag]}")
+                        if f"{stream['tags'][lang_tag].lower()}" not in new_file_values:
+                            new_file_values.append(f"{stream['tags'][lang_tag].lower()}")
 
-    new_file_values = [x.lower() for x in new_file_values]
+    #new_file_values = [x.lower() for x in new_file_values]
     new_file_values.insert(0, base_name.replace(" ", "_"))
 
     output_file = "_".join(new_file_values)
