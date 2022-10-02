@@ -31,7 +31,7 @@ for file in files:
     for stream in json_all["streams"]:
         if stream["codec_type"] in accepted:
             if stream["codec_name"] not in new_file_values:
-                new_file_values.append(stream["codec_name"])
+                new_file_values.append(stream["codec_name"].upper())
 
         if stream["codec_type"] == "video" and stream["index"] == 0:
             new_file_values.append(f"{stream['height']}p")
