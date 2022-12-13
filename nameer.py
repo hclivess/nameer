@@ -3,11 +3,31 @@ import re
 import json
 import os
 import sys
+import time
 
 files = sys.argv[1:]
-# files = ["a.mkv"]
+#files = ["normal.mkv"]
 
 for file in files:
+
+    """iframe check"""
+
+    i_frame_command = f'ffprobe -show_frames "{file}" -read_intervals %+30 -hide_banner'
+    with subprocess.Popen(i_frame_command, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as i_frame_process:
+        i_stdout, i_stderr = i_frame_process.communicate()
+        i_return_code = i_frame_process.returncode
+        i_pid = i_frame_process.pid
+        i_frame_process.wait()
+
+        i_out = str(i_stdout)
+        i_prob_count = i_out.count("pict_type=I")
+        print(f"I frames found: {i_prob_count}")
+
+        if i_prob_count < 3:
+            i_problem = "_problem"
+        else:
+            i_problem = ""
+    """iframe check"""
 
     command_line = f'ffprobe.exe -v quiet -print_format json -show_format -show_entries stream=bit_rate,codec_type,codec_name,height,channels,tags,r_frame_rate,index:stream_tags=language "{file}"'
     base_name = os.path.splitext(file)[0]
@@ -16,13 +36,14 @@ for file in files:
     print(f"Base: {base_name}")
     print(f"Extension: {extension}")
 
-    process = subprocess.Popen(command_line, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, stderr = process.communicate()
-    return_code = process.returncode
-    pid = process.pid
-    process.wait()
+    with subprocess.Popen(command_line, stdout=subprocess.PIPE, stderr=subprocess.STDOUT) as process:
+        stdout, stderr = process.communicate()
+        return_code = process.returncode
+        pid = process.pid
+        process.wait()
 
-    json_all = json.loads(stdout.decode())
+        print(stdout.decode())
+        json_all = json.loads(stdout.decode())
 
     print(json_all)
     new_file_values = []
@@ -37,7 +58,7 @@ for file in files:
             new_file_values.append(f"{stream['height']}p")
 
             frame_rate_str = stream['r_frame_rate'].split("/")
-            frame_rate = int(int(frame_rate_str[0])/int(frame_rate_str[1]))
+            frame_rate = int(int(frame_rate_str[0]) / int(frame_rate_str[1]))
             new_file_values.append(f"{frame_rate}fps")
 
             new_file_values.append(f"{int((int(json_all['format']['bit_rate'])) / 1024)}kbs")
@@ -62,7 +83,10 @@ for file in files:
                         if f"{stream['tags'][lang_tag].lower()}" not in new_file_values:
                             new_file_values.append(f"{stream['tags'][lang_tag].lower()}")
 
-    #new_file_values = [x.lower() for x in new_file_values]
+    if i_problem:
+        new_file_values.append("i_frame_issue")
+
+    # new_file_values = [x.lower() for x in new_file_values]
     new_file_values.insert(0, base_name.replace(" ", "_"))
 
     output_file = "_".join(new_file_values)

@@ -1,1 +1,1 @@
-nuitka --follow-imports nameer.py
+nuitka --onefile nameer.py
