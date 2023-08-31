@@ -1,27 +1,36 @@
-# nameer
-A simple tool to rename video files based on their properties. Simply drag and drop a file onto the executable or supply arguments to it via a batch file.
+# Nameer: Simplifying Video File Renaming
 
-## Why
-nameer exists for people with large video collections where it is not obvious what kind of settings and codecs were used for encoding/transmuxing. By putting those properties in file names, it gives users a better overview of the overall quality. This enables them to easily decide which files may need remastering.
+**Nameer** is a utility that streamlines the renaming of video files by utilizing their properties. It supports both dragging and dropping files onto the executable and supplying arguments via batch files.
 
-### Requirements
-You need to have `ffprobe.exe` in the directory or the system path. You can extract it from the extras directory in this repository.
+## Purpose
 
-### Example Input
-`home recording.mkv`
+The primary aim of **Nameer** is to facilitate the organization and management of video collections. By embedding essential properties into filenames, users can easily gauge encoding, quality, and other attributes of their videos. This functionality empowers users to determine which files may require further attention or remastering.
 
-### Example Output
-`home_recording_H264_1040p_23fps_5819kbs_AAC_2ch_eng_cze.mkv`
+## Requirements
 
-### Individual Parts
+To use **Nameer**, ensure that `ffprobe.exe` is present either in the tool's directory or within the system path. You can extract this executable from the "extras" directory in the **Nameer** repository.
 
-1. original file base name with underscores for spaces
-2. video format
-3. resolution
-4. frame rate
-5. video bitrate
-6. audio format (where applicable)
-7. audio channels (where applicable)
-8. audio bitrate (where applicable)
-9. language (where applicable)
-10. original extension
+## Usage Example
+
+**Input:**
+
+Original Filename: `home recording.mkv`
+
+**Output:**
+
+Renamed Filename: `home_recording_H264_1040p_23fps_5819kbs_AAC_2ch_eng_cze.mkv`
+
+## Components in Renamed Filenames
+
+1. Original file base name with underscores for spaces
+2. Video format
+3. Resolution
+4. Frame rate
+5. Video bitrate
+6. Audio format (if applicable)
+7. Audio channels (if applicable)
+8. Audio bitrate (if applicable)
+9. Language (if applicable)
+10. Original extension
+
+By following these guidelines, **Nameer** provides a structured approach to renaming video files, enhancing users' ability to manage and comprehend the properties of their collection.
