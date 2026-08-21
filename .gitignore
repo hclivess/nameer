@@ -1,5 +1,9 @@
-parameters.avs
-*.log
-*.exe
-*.7z
+__pycache__/
+*.pyc
+build/
+dist/
+output/
+presets/*.json
+.venv/
 .idea/
+*.log
