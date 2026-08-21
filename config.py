@@ -3,7 +3,7 @@ nameer - configuration and constants (the only place APP_NAME / APP_VERSION live
 """
 
 APP_NAME = "nameer"
-APP_VERSION = "2.0"
+APP_VERSION = "2.0.1"
 WINDOW_MIN_WIDTH = 820
 WINDOW_MIN_HEIGHT = 560
 

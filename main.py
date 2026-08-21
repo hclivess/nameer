@@ -7,7 +7,6 @@ Set NAMEER_SELFTEST=<video file> to run a headless smoke test (rename + verify) 
 """
 import json
 import os
-import subprocess
 import sys
 import time
 from typing import Dict, List, Optional
@@ -24,6 +23,8 @@ from PySide6.QtWidgets import (  # noqa: E402
 
 from config import (APP_NAME, APP_VERSION, CASES, COLLISIONS, DEFAULT_SETTINGS, DEFAULT_TEMPLATE, SEPARATORS,  # noqa: E402
                     TOKENS, VIDEO_EXTENSIONS, WINDOW_MIN_HEIGHT, WINDOW_MIN_WIDTH)
+from utils import childproc  # noqa: E402
+from utils.naturalsort import natural_key  # noqa: E402
 from nameer import (MediaInfo, app_dir, build_name, collect, ffprobe_version, find_ffprobe, probe,  # noqa: E402
                     process_file, undo)
 
@@ -446,7 +447,7 @@ class MainWindow(QMainWindow):
         for key, p in PRESETS.items():
             m.addAction(p["name"], lambda k=key: self._apply_preset(k))
         m.addSeparator()
-        user = sorted(f[:-5] for f in os.listdir(self.presets_dir) if f.endswith(".json") and f != "defaults.json")
+        user = sorted((f[:-5] for f in os.listdir(self.presets_dir) if f.endswith(".json") and f != "defaults.json"), key=natural_key)
         if user:
             for name in user:
                 m.addAction(name, lambda n=name: self._load_preset_file(os.path.join(self.presets_dir, n + ".json")))
@@ -535,8 +536,10 @@ class MainWindow(QMainWindow):
 
     def _write_json(self, path: str, data: Dict) -> bool:
         try:
-            with open(path, "w", encoding="utf-8") as fh:
+            tmp = path + ".tmp"
+            with open(tmp, "w", encoding="utf-8") as fh:
                 json.dump(data, fh, indent=2)
+            os.replace(tmp, path)
             return True
         except Exception as exc:
             QMessageBox.warning(self, "Preset", f"Could not write {path}:\n{exc}")
@@ -549,7 +552,7 @@ class MainWindow(QMainWindow):
                 self._rebuild_presets_menu()
 
     def _delete_preset(self):
-        user = sorted(f[:-5] for f in os.listdir(self.presets_dir) if f.endswith(".json") and f != "defaults.json")
+        user = sorted((f[:-5] for f in os.listdir(self.presets_dir) if f.endswith(".json") and f != "defaults.json"), key=natural_key)
         if not user:
             QMessageBox.information(self, "Presets", "No saved presets.")
             return
@@ -692,7 +695,16 @@ class MainWindow(QMainWindow):
 
     # ------------------------------------------------------------------ queue
     def add_paths(self, paths: List[str]):
-        new = [p for p in collect(paths, self.controls["recurse"].isChecked()) if p not in self.files]
+        norm = lambda p: os.path.normcase(os.path.abspath(p))  # noqa: E731
+        seen = {norm(p) for p in self.files}
+        new, dupes = [], 0
+        for p in collect(paths, self.controls["recurse"].isChecked()):
+            k = norm(p)
+            if k in seen:
+                dupes += 1
+                continue
+            seen.add(k)
+            new.append(p)
         jobs = []
         for p in new:
             self.files.append(p)
@@ -706,9 +718,14 @@ class MainWindow(QMainWindow):
             self._color_row(r, "pending")
             jobs.append((r, p))
         if new:
-            self.statusBar().showMessage(f"{len(new)} file(s) added — {len(self.files)} in queue")
+            msg = f"{len(new)} file(s) added — {len(self.files)} in queue"
+            if dupes:
+                msg += f" ({dupes} already in queue)"
+            self.statusBar().showMessage(msg)
             self.stat_queued.setText(str(len(self.files)))
             self._start_probe(jobs)
+        elif dupes:
+            self.statusBar().showMessage(f"{dupes} already in queue")
         elif paths:
             self.statusBar().showMessage("No new video files found (" + ", ".join(sorted(VIDEO_EXTENSIONS)) + ")")
 
@@ -869,6 +886,7 @@ class MainWindow(QMainWindow):
 # =============================================================================== entry
 def main():
     app = QApplication(sys.argv)
+    childproc.install_qt_hook(app)
     app.setStyle("Fusion")
     icon = os.path.join(app_dir(), "icon.ico")
     if os.path.exists(icon):

@@ -9,7 +9,6 @@ import json
 import os
 import re
 import shutil
-import subprocess
 import sys
 from dataclasses import dataclass, field
 from fractions import Fraction
@@ -17,8 +16,8 @@ from typing import Callable, Dict, List, Optional
 
 sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from config import DEFAULT_SETTINGS, TOKENS, VIDEO_EXTENSIONS  # noqa: E402
-
-_CREATE_NO_WINDOW = 0x08000000 if sys.platform == "win32" else 0
+from utils import childproc  # noqa: E402
+from utils.naturalsort import natural_key, natural_sorted  # noqa: E402
 
 
 def app_dir() -> str:
@@ -40,8 +39,7 @@ def find_ffprobe(explicit: str = "") -> Optional[str]:
 
 def ffprobe_version(path: str) -> str:
     try:
-        out = subprocess.run([path, "-version"], capture_output=True, text=True, timeout=10,
-                             creationflags=_CREATE_NO_WINDOW).stdout
+        out = childproc.run([path, "-version"], text=True, timeout=10).stdout
         return out.splitlines()[0].replace("ffprobe version ", "").split(" ")[0] if out else "?"
     except Exception:
         return "?"
@@ -111,13 +109,13 @@ def _lang(stream: Dict) -> str:
 def count_iframes(ffprobe: str, path: str, seconds: int) -> int:
     cmd = [ffprobe, "-v", "error", "-select_streams", "v:0", "-read_intervals", f"%+{seconds}",
            "-show_entries", "frame=pict_type", "-of", "csv=p=0", path]
-    out = subprocess.run(cmd, capture_output=True, text=True, timeout=300, creationflags=_CREATE_NO_WINDOW).stdout
+    out = childproc.run(cmd, text=True, timeout=300).stdout
     return sum(1 for line in out.splitlines() if line.strip().startswith("I"))
 
 
 def probe(path: str, ffprobe: str, check_iframes: bool = True, iframe_seconds: int = 30, iframe_min: int = 3) -> MediaInfo:
     cmd = [ffprobe, "-v", "error", "-print_format", "json", "-show_format", "-show_streams", path]
-    proc = subprocess.run(cmd, capture_output=True, text=True, timeout=120, creationflags=_CREATE_NO_WINDOW)
+    proc = childproc.run(cmd, text=True, timeout=120)
     if proc.returncode != 0:
         raise RuntimeError((proc.stderr or "ffprobe failed").strip().splitlines()[-1])
     data = json.loads(proc.stdout or "{}")
@@ -368,8 +366,9 @@ def collect(paths: List[str], recurse: bool = True) -> List[str]:
     for p in paths:
         if os.path.isdir(p):
             walker = os.walk(p) if recurse else [(p, [], os.listdir(p))]
-            for folder, _dirs, files in walker:
-                for f in sorted(files):
+            for folder, dirs, files in walker:
+                dirs.sort(key=natural_key)
+                for f in sorted(files, key=natural_key):
                     if os.path.splitext(f)[1].lower() in VIDEO_EXTENSIONS:
                         out.append(os.path.join(folder, f))
         elif os.path.isfile(p) and os.path.splitext(p)[1].lower() in VIDEO_EXTENSIONS:

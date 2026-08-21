@@ -100,6 +100,13 @@ GUI; for scripting run `nameer.py` from the source tree.
 Tag `v<APP_VERSION>` (from `config.py`) and CI builds all three OSes, runs the unit tests and a headless rename of a
 generated video against the frozen Linux binary, and attaches the archives to the release.
 
+## Changes in 2.0.1
+
+- ffprobe helper processes are tracked and killed when nameer quits, is stopped, or dies (Windows Job object /
+  Linux PDEATHSIG) — no orphaned ffprobe left behind.
+- Adding files or folders never queues the same path twice; the status bar reports "n already in queue".
+- Files collected from folders are in natural order (`clip2.mkv` before `clip10.mkv`, folder by folder).
+
 ## Changes in 2.0
 
 - **Rewritten as a PySide6 desktop app** with live name previews, presets, dry run, undo log, drag & drop of folders.

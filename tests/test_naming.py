@@ -54,3 +54,20 @@ def test_resolve_target_numbering(tmp_path):
     assert resolve_target(str(src), "b.mkv", "skip") is None
     assert resolve_target(str(src), "b.mkv", "overwrite") == str(tmp_path / "b.mkv")
     assert resolve_target(str(src), "a.mkv", "skip") == str(src)
+
+
+def test_collect_natural_order(tmp_path):
+    from nameer import collect
+    sub = tmp_path / "b"
+    sub.mkdir()
+    for n in ("clip10.mkv", "clip2.mkv", "Clip1.mkv", "notes.txt"):
+        (tmp_path / n).write_bytes(b"")
+    (sub / "ep9.mp4").write_bytes(b"")
+    (sub / "ep10.mp4").write_bytes(b"")
+    got = [os.path.relpath(p, tmp_path) for p in collect([str(tmp_path)])]
+    assert got == ["Clip1.mkv", "clip2.mkv", "clip10.mkv", os.path.join("b", "ep9.mp4"), os.path.join("b", "ep10.mp4")]
+
+
+def test_natural_sorted_paths():
+    from utils.naturalsort import natural_sorted
+    assert natural_sorted(["x/img10.jpg", "x/img2.jpg", "x/IMG1.jpg"]) == ["x/IMG1.jpg", "x/img2.jpg", "x/img10.jpg"]
