@@ -100,6 +100,14 @@ GUI; for scripting run `nameer.py` from the source tree.
 Tag `v<APP_VERSION>` (from `config.py`) and CI builds all three OSes, runs the unit tests and a headless rename of a
 generated video against the frozen Linux binary, and attaches the archives to the release.
 
+## Changes in 2.0.2
+
+- **The Windows taskbar shows the app's own icon.** The taskbar button takes its icon from the process's
+  Application User Model ID rather than from the window, and with none of its own the process was grouped
+  under whatever launched it and wore that program's icon. One is now set before any window exists, and it
+  carries no version number so a pinned button survives an upgrade.
+
+
 ## Changes in 2.0.1
 
 - ffprobe helper processes are tracked and killed when nameer quits, is stopped, or dies (Windows Job object /

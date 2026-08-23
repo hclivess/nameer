@@ -885,6 +885,17 @@ class MainWindow(QMainWindow):
 
 # =============================================================================== entry
 def main():
+    if sys.platform == "win32":
+        # The taskbar button takes its icon from the process's Application User Model ID, not from the
+        # window: with none of its own the process is grouped under whatever launched it and shows that
+        # program's icon. Must happen before any window exists; no version in the id, so a pinned button
+        # survives an upgrade.
+        try:
+            import ctypes
+            ctypes.windll.shell32.SetCurrentProcessExplicitAppUserModelID(f"hclivess.{APP_NAME}")
+        except Exception:
+            pass
+
     app = QApplication(sys.argv)
     childproc.install_qt_hook(app)
     app.setStyle("Fusion")
